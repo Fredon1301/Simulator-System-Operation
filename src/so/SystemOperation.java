@@ -1,54 +1,63 @@
 package so;
 
+import java.util.List;
+
 import so.cpu.CpuManager;
 import so.memory.MemoryManager;
 import so.memory.Strategy;
 import so.process.Process;
+import so.scheduler.FCFS;
+import so.scheduler.Scheduler;
+import so.scheduler.SchedulerQueue;
 
 public class SystemOperation {
 	
 
 	private static MemoryManager memory;
-	private	static CpuManager cpu;
+	private	static SchedulerQueue scheduler;
 
 	
-	public static Object systemCall(SystemCallType type, Process process) {
-		if (type.equals(SystemCallType.WRITE_PROCESS)) {
-			memory.write(process);
-			//memory.viewMemory(process);
-			return null;
-		} else if (type.equals(SystemCallType.CLOSE_PROCESS)) {
-			memory.deallocate(process);
-			//memory.viewMemory(process);
-			return null;
-		}else if (type.equals(SystemCallType.CREATE_PROCESS)) {
-			return new Process(0);
-			
-		}else if(type.equals(SystemCallType.READ_PROCESS)) {
-			memory.viewMemory();
-			
+	public static Process systemCall(SystemCallType type, int processSize) {
+		if (type.equals(SystemCallType.CREATE_PROCESS)) {
+			if (memory == null) {
+				memory = new MemoryManager();
+			}
+			if(scheduler == null) {
+				scheduler = new FCFS();
+			 }
 		}
-		return null;
+		return new Process(processSize);
+		}
+		
+	public static List<SubProcess> systemCall(SystemCallType type, Process process) {
+		 if (type.equals(SystemCallType.CLOSE_PROCESS)) {
+			 scheduler.finish(process);
+			memory.deallocate(process);
+		}
+		 if (type.equals(SystemCallType.WRITE_PROCESS)) {
+
+			  if (memory != null && scheduler != null) {
+				memory.write(process);
+				scheduler.execute(process);
+				memory.printMemoryStatus();
+			  }
+		
+		}
+		if(type.equals(SystemCallType.READ_PROCESS)) {
+			return memory.read(process);
+		} return null;
 	}
 	public static void main(String[] args) {
-		Process process = new Process(20);
-		Process process2 = new Process(38);
-		Process process3 = new Process(38);
-		Process process4 = new Process(20);
-		Process process5 = new Process(8);
+
 		SystemOperation.memory = new MemoryManager();
 		
-		systemCall(SystemCallType.WRITE_PROCESS, process);
+		Process process1 = systemCall(SystemCallType.CREATE_PROCESS, 4);
+		
+		systemCall(SystemCallType.WRITE_PROCESS, process1);
 		
 		
-		systemCall(SystemCallType.WRITE_PROCESS, process2);
+		
 
-		
-		systemCall(SystemCallType.WRITE_PROCESS, process3);
-		systemCall(SystemCallType.WRITE_PROCESS, process4);
-		systemCall(SystemCallType.CLOSE_PROCESS, process2);
-		systemCall(SystemCallType.WRITE_PROCESS, process5);
-		//systemCall(SystemCallType.READ_PROCESS, null);
 
 
 

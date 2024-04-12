@@ -1,52 +1,102 @@
 package so.memory;
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
+
+import so.SubProcess;
 import so.process.Process;
 public class MemoryManager {
 	
 	private Strategy strategy;
-	private String[] physicMemory;
-	private String[] logicMemory;
+	private Hashtable<String, FrameMemory> logicalMemory;
+	private int pageSize;
+	private SubProcess[][] physicalMemory;
+	private static int INTRUCTIONS_PER_PROCESS = 7;
 
 	
+	public MemoryManager(int pageSize, int physicalMemorySize) {
+		this.strategy = new Paging();
+		this.pageSize = pageSize;
+		this.logicalMemory = new Hashtable<String, FrameMemory>();
+		int pages = physicalMemorySize/pageSize;
+		this.physicalMemory = new SubProcess[pages][pageSize];
+
+	}
+	
 	public MemoryManager() {
-		this.strategy = new WorstFit();
-		this.physicMemory = new String[128];
-		this.logicMemory = new String[128];
+	this(4,256);
 	}
 	
 	
-	public void write(Process process) {
-	    int index = strategy.findSlot(physicMemory, process);
-	    if (index != -1) {
-	        for (int i = 0; i < process.getSize(); i++) {
-	            physicMemory[index + i] = process.getProcessId();
+	public void write(Process process) {	
+	    List<FrameMemory> frames = strategy.findSlot(physicalMemory, process);
+	    int spaces = (int) Math.ceil(process.getSubProcesses().size() / this.getPageSize());
+	    List<String> subProcessesIds = process.getSubProcesses();
+	    if (spaces <= frames.size()) {
+	        int subProcessIndex = 0;
+	        for(int i = 0; i < spaces; i++) {
+	            for(int j = 0; j < this.pageSize; j++) {
+	                if(subProcessIndex < process.getSubProcesses().size()) {
+	                    SubProcess subProcess = new SubProcess(subProcessesIds.get(subProcessIndex), INTRUCTIONS_PER_PROCESS);
+	                    this.physicalMemory[frames.get(i).getPageNumber()][j] = subProcess;
+	                    FrameMemory frameMemory = new FrameMemory(frames.get(i).getPageNumber(),j); 
+	                    this.logicalMemory.put(subProcess.getSubProcessId(), frameMemory);
+	                    subProcessIndex++;
+	                    
+	                } else {
+	                    break;
+	                }
+	            }
 	        }
-	        process.setMemoryAddress(new MemoryAddress(index, index + process.getSize() - 1));
-	        System.out.printf("Processo %s alocado com o espaço de memoria %d no endereço de memoria que inicia no index %d e finaliza no %d  %n", process.getProcessId(), process.getSize(),
-	        		process.getMemoryAddress().getStart(), process.getMemoryAddress().getEnd() );
-	    } else {
-	        System.out.printf("Não há espaço suficiente na memória para o processo: %s, pois o tamanho deste processo eh %d %n", process.getProcessId(), process.getSize());
 	    }
+
 	}
-		
+
 	public void deallocate(Process process) {
         MemoryAddress memoryAddress = process.getMemoryAddress();
         if (memoryAddress != null) {
             for (int i = memoryAddress.getStart(); i <= memoryAddress.getEnd(); i++) {
-                physicMemory[i] = null;
+                physicalMemory[i] = null;
             }
             System.out.printf("Processo %s do tamanho %d removido do indice que inicia em %d até %d, que agora estão disponíveis %n ", process.getProcessId(), process.getSize(),
             		process.getMemoryAddress().getStart(), process.getMemoryAddress().getEnd());
+            System.out.println("");
             process.setMemoryAddress(null);
         }
     }
+	
+	public void printMemoryStatus() {
+		for(int i = 0; i < this.physicalMemory.length; i++) {
+			for (int j = 0; j < this.physicalMemory[i].length; j++) {
+				SubProcess subProcess = this.physicalMemory[i][j];
+				String subProcessId = null;
+				if (subProcess != null ) {
+					subProcessId = subProcess.getSubProcessId();
+				}
+				if (j == this.physicalMemory[i].length - 1) {
+					System.out.println(subProcessId);
+				} else {
+					System.out.print(subProcessId + " | " );
+				}
+			}
+		}
+	}
 
 
 	
-	public void viewMemory() {
-		System.out.println("\n Memória: \n");
-		for (String i: physicMemory) {
-			System.out.println(i);
-		}
+	public List<SubProcess> read(Process process) {
+	    List<String> subProcessIds = process.getSubProcesses();
+	    List<SubProcess> subProcesses = new LinkedList<>();
+	    for (int i = 0; i < subProcessIds.size(); i++) {
+	        String subProcessId = subProcessIds.get(i) + " " + i;
+	        FrameMemory physicalMemoryAddress = this.logicalMemory.get(subProcessId);
+	        if (physicalMemoryAddress != null) { 
+	            int pageNumber = physicalMemoryAddress.getPageNumber();
+	            int displacement = physicalMemoryAddress.getDisplacement();
+	            subProcesses.add(this.physicalMemory[pageNumber][displacement]);
+	        }
+	    }
+	    return subProcesses;
 	}
 
 	public Strategy getStrategy() {
@@ -57,21 +107,27 @@ public class MemoryManager {
 		this.strategy = strategy;
 	}
 
-	public String[] getPhysicMemory() {
-		return physicMemory;
+	
+
+	public SubProcess[][] getPhysicalMemory() {
+		return physicalMemory;
 	}
 
-	public void setPhysicMemory(String[] physicMemory) {
-		this.physicMemory = physicMemory;
+	public void setPhysicalMemory(SubProcess[][] physicalMemory) {
+		this.physicalMemory = physicalMemory;
 	}
 
-	public String[] getLogicMemory() {
-		return logicMemory;
+	public int getPageSize() {
+		return pageSize;
 	}
 
-	public void setLogicMemory(String[] logicMemory) {
-		this.logicMemory = logicMemory;
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
 	}
+	
+	
+
+
 	
 	
 	

@@ -1,11 +1,12 @@
 package so.process;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-
+import so.SubProcess;
 import so.memory.MemoryAddress;
 
 public class Process {
@@ -13,21 +14,21 @@ public class Process {
 	private String processId;
 	private int size;
 	private MemoryAddress memoryAddress;
-	// Step second 
 	private int timeToExecute;
+
 	private int numberOfInstructions;
-	private List<Process> processes;
-	private int priority;
+	private List<String> subProcesses;
+	private static int count;
 	
 	
 
 	
 
 	public Process(int size) {
-		this.processId = UUID.randomUUID().toString();
-		//Random rand = new Random();
-		//List<Integer> numbers = Arrays.asList(1,2,3,4,5,6,10,20,30,40,50,60,70,100);
+		count++;
+		this.processId = "P" + count;
 		this.size = size;
+		this.subProcesses = getSubProcesses();
 	}
 
 
@@ -51,7 +52,7 @@ public class Process {
 
 
 	public MemoryAddress getMemoryAddress() {
-		return memoryAddress;
+		return memoryAddress;  
 	}
 
 
@@ -60,6 +61,40 @@ public class Process {
 		this.memoryAddress = memoryAddress;
 	}
 
+
+
+	public List<String> getSubProcesses() {
+		if(this.subProcesses == null || this.subProcesses.isEmpty()) {
+		List<String> process = new LinkedList<>();
+			for(int i = 0; i < this.getSize(); i++) {
+				process.add((this.getProcessId()));
+			}
+			this.subProcesses = process;
+		}
+		return this.subProcesses;
+	}
+
+
+
+	public void setSubProcesses(List<String> subProcesses) {
+		this.subProcesses = subProcesses;
+	}
+
+
+
+	public int getTimeToExecute() {
+		return timeToExecute;
+	}
+
+
+
+	public void setTimeToExecute(int timeToExecute) {
+		this.timeToExecute = timeToExecute;
+	}
+	
+	
+
+	
 	
 	
 	
