@@ -51,10 +51,12 @@ public class SystemOperation {
 
 		SystemOperation.memory = new MemoryManager();
 		
-		Process process1 = systemCall(SystemCallType.CREATE_PROCESS, 4);
+		Process process1 = systemCall(SystemCallType.CREATE_PROCESS, 15);
+		Process process2 = systemCall(SystemCallType.CREATE_PROCESS, 13);
+		
 		
 		systemCall(SystemCallType.WRITE_PROCESS, process1);
-		
+		systemCall(SystemCallType.WRITE_PROCESS, process2);
 		
 		
 

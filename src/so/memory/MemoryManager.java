@@ -30,19 +30,20 @@ public class MemoryManager {
 	
 	public void write(Process process) {	
 	    List<FrameMemory> frames = strategy.findSlot(physicalMemory, process);
-	    int spaces = (int) Math.ceil(process.getSubProcesses().size() / this.getPageSize());
+	    int spaces = (int) Math.ceil((double) process.getSubProcesses().size() / this.getPageSize());
 	    List<String> subProcessesIds = process.getSubProcesses();
 	    if (spaces <= frames.size()) {
 	        int subProcessIndex = 0;
 	        for(int i = 0; i < spaces; i++) {
+	        	FrameMemory  frameMemory = frames.get(i); 
 	            for(int j = 0; j < this.pageSize; j++) {
 	                if(subProcessIndex < process.getSubProcesses().size()) {
 	                    SubProcess subProcess = new SubProcess(subProcessesIds.get(subProcessIndex), INTRUCTIONS_PER_PROCESS);
 	                    this.physicalMemory[frames.get(i).getPageNumber()][j] = subProcess;
-	                    FrameMemory frameMemory = new FrameMemory(frames.get(i).getPageNumber(),j); 
+	                    frameMemory.setDisplacement(j);
 	                    this.logicalMemory.put(subProcess.getSubProcessId(), frameMemory);
 	                    subProcessIndex++;
-	                    
+	                
 	                } else {
 	                    break;
 	                }
@@ -80,6 +81,9 @@ public class MemoryManager {
 				}
 			}
 		}
+		System.out.println("");
+		System.out.println("****************************************");
+		System.out.println("");
 	}
 
 
