@@ -31,8 +31,9 @@ public class SystemOperation {
 		
 	public static List<SubProcess> systemCall(SystemCallType type, Process process) {
 		 if (type.equals(SystemCallType.CLOSE_PROCESS)) {
-			 scheduler.finish(process);
 			memory.deallocate(process);
+			scheduler.finish(process);
+			memory.printMemoryStatus();
 		}
 		 if (type.equals(SystemCallType.WRITE_PROCESS)) {
 
@@ -51,12 +52,13 @@ public class SystemOperation {
 
 		SystemOperation.memory = new MemoryManager();
 		
-		Process process1 = systemCall(SystemCallType.CREATE_PROCESS, 15);
+		Process process1 = systemCall(SystemCallType.CREATE_PROCESS, 81);
 		Process process2 = systemCall(SystemCallType.CREATE_PROCESS, 13);
 		
 		
 		systemCall(SystemCallType.WRITE_PROCESS, process1);
 		systemCall(SystemCallType.WRITE_PROCESS, process2);
+		systemCall(SystemCallType.CLOSE_PROCESS, process1);
 		
 		
 

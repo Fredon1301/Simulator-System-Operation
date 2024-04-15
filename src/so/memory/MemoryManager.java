@@ -1,7 +1,9 @@
 package so.memory;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import so.SubProcess;
 import so.process.Process;
@@ -54,18 +56,21 @@ public class MemoryManager {
 	}
 
 	public void deallocate(Process process) {
-        MemoryAddress memoryAddress = process.getMemoryAddress();
-        if (memoryAddress != null) {
-            for (int i = memoryAddress.getStart(); i <= memoryAddress.getEnd(); i++) {
-                physicalMemory[i] = null;
-            }
-            System.out.printf("Processo %s do tamanho %d removido do indice que inicia em %d até %d, que agora estão disponíveis %n ", process.getProcessId(), process.getSize(),
-            		process.getMemoryAddress().getStart(), process.getMemoryAddress().getEnd());
-            System.out.println("");
-            process.setMemoryAddress(null);
-        }
-    }
-	
+	    Iterator<Map.Entry<String, FrameMemory>> iterator = logicalMemory.entrySet().iterator();
+	    while (iterator.hasNext()) {
+	        Map.Entry<String, FrameMemory> entry = iterator.next();
+	        String key = entry.getKey();
+	        String[] parts = key.split(" ");
+	        String processId = parts[0];
+	        if (processId.equals(process.getProcessId())) {
+	            FrameMemory frame = entry.getValue();
+	            for (int j = 0; j < physicalMemory[frame.getPageNumber()].length; j++) {
+	                physicalMemory[frame.getPageNumber()][j] = null;
+	            }
+	            iterator.remove();
+	        }
+	    }
+	}
 	public void printMemoryStatus() {
 		for(int i = 0; i < this.physicalMemory.length; i++) {
 			for (int j = 0; j < this.physicalMemory[i].length; j++) {
