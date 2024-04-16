@@ -7,14 +7,14 @@ import so.memory.MemoryManager;
 import so.memory.Strategy;
 import so.process.Process;
 import so.scheduler.FCFS;
+import so.scheduler.RoundRobin;
 import so.scheduler.Scheduler;
-import so.scheduler.SchedulerQueue;
 
 public class SystemOperation {
 	
 
 	private static MemoryManager memory;
-	private	static SchedulerQueue scheduler;
+	private	static Scheduler scheduler;
 
 	
 	public static Process systemCall(SystemCallType type, int processSize) {
@@ -23,7 +23,7 @@ public class SystemOperation {
 				memory = new MemoryManager();
 			}
 			if(scheduler == null) {
-				scheduler = new FCFS();
+				scheduler = new RoundRobin();
 			 }
 		}
 		return new Process(processSize);
@@ -54,11 +54,14 @@ public class SystemOperation {
 		
 		Process process1 = systemCall(SystemCallType.CREATE_PROCESS, 81);
 		Process process2 = systemCall(SystemCallType.CREATE_PROCESS, 13);
+		Process process3 = systemCall(SystemCallType.CREATE_PROCESS, 34);
 		
 		
 		systemCall(SystemCallType.WRITE_PROCESS, process1);
 		systemCall(SystemCallType.WRITE_PROCESS, process2);
+		systemCall(SystemCallType.WRITE_PROCESS, process3);
 		systemCall(SystemCallType.CLOSE_PROCESS, process1);
+		systemCall(SystemCallType.CLOSE_PROCESS, process3);
 		
 		
 

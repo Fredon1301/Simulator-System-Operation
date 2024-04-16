@@ -10,7 +10,7 @@ import so.SystemOperation;
 import so.cpu.Core;
 import so.process.Process;
 
-public class FCFS extends SchedulerQueue {
+public class FCFS extends Scheduler {
     private Queue<SubProcess> queue;
 
     public FCFS() {

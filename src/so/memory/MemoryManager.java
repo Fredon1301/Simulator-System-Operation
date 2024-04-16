@@ -71,6 +71,7 @@ public class MemoryManager {
 	        }
 	    }
 	}
+	
 	public void printMemoryStatus() {
 		for(int i = 0; i < this.physicalMemory.length; i++) {
 			for (int j = 0; j < this.physicalMemory[i].length; j++) {
