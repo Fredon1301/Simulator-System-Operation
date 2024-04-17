@@ -6,9 +6,9 @@ import so.cpu.CpuManager;
 import so.memory.MemoryManager;
 import so.memory.Strategy;
 import so.process.Process;
-import so.scheduler.FCFS;
-import so.scheduler.RoundRobin;
 import so.scheduler.Scheduler;
+import so.scheduler.strategy.FCFS;
+import so.scheduler.strategy.RoundRobin;
 
 public class SystemOperation {
 	
@@ -23,7 +23,7 @@ public class SystemOperation {
 				memory = new MemoryManager();
 			}
 			if(scheduler == null) {
-				scheduler = new RoundRobin();
+				scheduler = new FCFS();
 			 }
 		}
 		return new Process(processSize);
@@ -32,7 +32,7 @@ public class SystemOperation {
 	public static List<SubProcess> systemCall(SystemCallType type, Process process) {
 		 if (type.equals(SystemCallType.CLOSE_PROCESS)) {
 			memory.deallocate(process);
-			scheduler.finish(process);
+			scheduler.closeProcess(process);
 			memory.printMemoryStatus();
 		}
 		 if (type.equals(SystemCallType.WRITE_PROCESS)) {
@@ -63,6 +63,8 @@ public class SystemOperation {
 		systemCall(SystemCallType.CLOSE_PROCESS, process1);
 		systemCall(SystemCallType.CLOSE_PROCESS, process3);
 		
+		
+		while(!SystemOperation.scheduler.isFinished());
 		
 
 

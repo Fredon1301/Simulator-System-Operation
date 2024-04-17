@@ -1,4 +1,4 @@
-package so.scheduler;
+package so.scheduler.strategy;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -8,6 +8,7 @@ import so.SystemCallType;
 import so.SystemOperation;
 import so.cpu.Core;
 import so.process.Process;
+import so.scheduler.Scheduler;
 
 public class SJF extends Scheduler{
 	
@@ -62,6 +63,22 @@ public class SJF extends Scheduler{
 
 	@Override
 	public boolean isEmpty(Process process) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+
+	@Override
+	public void closeProcess(Process process) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public boolean isFinished() {
 		// TODO Auto-generated method stub
 		return false;
 	}

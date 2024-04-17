@@ -2,37 +2,53 @@ package so.cpu;
 
 
 import so.SubProcess;
+import so.scheduler.ProcessListener;
 
 public class Core implements Runnable{
 	private int CoreId;
-	private int numberOfInstructionsPerClock;
+	private int instructionsPerSecond;
 	private SubProcess actuallySubProcess;
-	private int sumInstructionsExecuted;
 	
-	public Core(int numberOfInstructionsPerClock, int coreId) {
-		this.numberOfInstructionsPerClock = numberOfInstructionsPerClock;
+	private ProcessListener processListener;
+	
+	public Core(int instructionsPerSecond, int coreId, ProcessListener processListener) {
+		this.instructionsPerSecond = instructionsPerSecond;
 		this.CoreId = coreId;
+		this.processListener = processListener;
 		
 	}
 	
-	public Core(int coreId) {
-		this(coreId,7);
-	}
+
 	
 	@Override
 	public void run() {
-		this.sumInstructionsExecuted += numberOfInstructionsPerClock;
-		if (sumInstructionsExecuted >= actuallySubProcess.getInstructions()) {
-			this.finishSubProcess();
+		int sumInstructionsExecuted = this.getActuallySubProcess().getInstructionsExecuted(); //err
+		this.actuallySubProcess.setInstructionsExecuted(sumInstructionsExecuted);
+		System.out.println("************************* Núcleo " + this.getCoreId()  + "********************************");
+		System.out.println("Executando SubProcesso " + this.actuallySubProcess.getSubProcessId());
+		if (this.actuallySubProcess.getInstructionsExecuted() >= this.actuallySubProcess.getInstructions())  {
+			this.finishExecution();
 		}
 	
 		
 	}
 
-	private void finishSubProcess() {
+	public void finishExecution() {
+		System.out.println("----------->  Fim da execução do subprocesso " + this.actuallySubProcess.getSubProcessId());
+		this.processListener.coreExecuted(this.getCoreId(), this.getActuallySubProcess().getSubProcessId());
 		this.actuallySubProcess = null;
-		this.sumInstructionsExecuted = 0;
 		
+		
+		
+	}
+	
+	public boolean isEmpty() {
+		if(actuallySubProcess == null) {
+			return true;
+		} else  {
+			return false;
+			
+		}
 	}
 
 	public int getCoreId() {

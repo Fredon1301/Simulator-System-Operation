@@ -1,4 +1,4 @@
-package so.scheduler;
+package so.scheduler.strategy;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -7,6 +7,7 @@ import so.SubProcess;
 import so.SystemCallType;
 import so.SystemOperation;
 import so.process.Process;
+import so.scheduler.Scheduler;
 
 public class RoundRobin extends Scheduler {
     private Queue<SubProcess> queue;
@@ -39,14 +40,10 @@ public class RoundRobin extends Scheduler {
                     clockCounter = 0;
                     break;
                 }
-            }
-            if (remainingTime == 0) {
-                System.out.println("Subprocesso " + currentProcess + " finalizado");
-            }
+            
         }
-        System.out.println("Todos os subprocessos foram finalizados");
+        }
     }
-
     @Override
     public void finish(Process process) {
        
@@ -56,4 +53,16 @@ public class RoundRobin extends Scheduler {
     public boolean isEmpty(Process process) {
         return queue.isEmpty();
     }
+
+	@Override
+	public void closeProcess(Process process) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean isFinished() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

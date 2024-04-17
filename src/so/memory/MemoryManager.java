@@ -13,7 +13,7 @@ public class MemoryManager {
 	private Hashtable<String, FrameMemory> logicalMemory;
 	private int pageSize;
 	private SubProcess[][] physicalMemory;
-	private static int INTRUCTIONS_PER_PROCESS = 7;
+	private static int NUMBER_OF_INTRUCTIONS_OF_A_PROCESS = 3;
 
 	
 	public MemoryManager(int pageSize, int physicalMemorySize) {
@@ -21,7 +21,7 @@ public class MemoryManager {
 		this.pageSize = pageSize;
 		this.logicalMemory = new Hashtable<String, FrameMemory>();
 		int pages = physicalMemorySize/pageSize;
-		this.physicalMemory = new SubProcess[pages][pageSize];
+		this.physicalMemory = new SubProcess[pages][this.pageSize];
 
 	}
 	
@@ -40,7 +40,7 @@ public class MemoryManager {
 	        	FrameMemory  frameMemory = frames.get(i); 
 	            for(int j = 0; j < this.pageSize; j++) {
 	                if(subProcessIndex < process.getSubProcesses().size()) {
-	                    SubProcess subProcess = new SubProcess(subProcessesIds.get(subProcessIndex), INTRUCTIONS_PER_PROCESS);
+	                    SubProcess subProcess = new SubProcess(subProcessesIds.get(subProcessIndex), NUMBER_OF_INTRUCTIONS_OF_A_PROCESS);
 	                    this.physicalMemory[frames.get(i).getPageNumber()][j] = subProcess;
 	                    frameMemory.setDisplacement(j);
 	                    this.logicalMemory.put(subProcess.getSubProcessId(), frameMemory);
@@ -73,6 +73,7 @@ public class MemoryManager {
 	}
 	
 	public void printMemoryStatus() {
+		System.out.println("\n Status da memória fisica: \n");
 		for(int i = 0; i < this.physicalMemory.length; i++) {
 			for (int j = 0; j < this.physicalMemory[i].length; j++) {
 				SubProcess subProcess = this.physicalMemory[i][j];

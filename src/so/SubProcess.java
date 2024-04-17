@@ -16,6 +16,8 @@ public class SubProcess {
 	private static int COUNT_GENERATE_ID = 0;
 	
 	private int instructions;
+	
+	private int InstructionsExecuted = 0;
 
 	public SubProcess( String processId, int instructions) {
 		this.subProcessId =  processId + " " + COUNT_GENERATE_ID;
@@ -59,6 +61,16 @@ public class SubProcess {
 	public void setTimeToExecute(int timeToExecute) {
 		this.timeToExecute = timeToExecute;
 	}
+
+	public int getInstructionsExecuted() {
+		return InstructionsExecuted;
+	}
+
+	public void setInstructionsExecuted(int instructionsExecuted) {
+		InstructionsExecuted = instructionsExecuted;
+	}
+	
+	
 	
 	
 	
