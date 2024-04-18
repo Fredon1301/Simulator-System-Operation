@@ -22,11 +22,19 @@ public class Core implements Runnable{
 	
 	@Override
 	public void run() {
-		int sumInstructionsExecuted = this.getActuallySubProcess().getInstructionsExecuted(); //err
-		this.actuallySubProcess.setInstructionsExecuted(sumInstructionsExecuted);
-		System.out.println("************************* Núcleo " + this.getCoreId()  + "********************************");
-		System.out.println("Executando SubProcesso " + this.actuallySubProcess.getSubProcessId());
-		if (this.actuallySubProcess.getInstructionsExecuted() >= this.actuallySubProcess.getInstructions())  {
+		if(this.actuallySubProcess != null ) {
+			int sumInstructionsExecuted = this.getActuallySubProcess().getInstructionsExecuted() + instructionsPerSecond; //e
+			this.actuallySubProcess.setInstructionsExecuted(sumInstructionsExecuted);
+			System.out.println("************************* Núcleo " + this.getCoreId()  + "********************************\n");
+			System.out.println("Executando SubProcesso " + this.actuallySubProcess.getSubProcessId());
+			if (this.actuallySubProcess.getInstructionsExecuted() >= this.actuallySubProcess.getInstructions())  {
+				//if (this.actuallySubProcess != null) {
+				//	System.out.println(this.actuallySubProcess.getSubProcessId());}
+				System.out.println();
+				System.out.println("-------->  Fim da execução do subprocesso " + this.actuallySubProcess.getSubProcessId()+"<--------\n");
+				this.finishExecution();
+			}			
+		} else {
 			this.finishExecution();
 		}
 	
@@ -34,9 +42,8 @@ public class Core implements Runnable{
 	}
 
 	public void finishExecution() {
-		System.out.println("----------->  Fim da execução do subprocesso " + this.actuallySubProcess.getSubProcessId());
-		this.processListener.coreExecuted(this.getCoreId(), this.getActuallySubProcess().getSubProcessId());
 		this.actuallySubProcess = null;
+		this.processListener.coresExecuted(this.getCoreId());
 		
 		
 		

@@ -15,7 +15,7 @@ public class Process {
 	private int size;
 	private MemoryAddress memoryAddress;
 	private int timeToExecute;
-
+	private int Priority;
 	private int numberOfInstructions;
 	private List<String> subProcesses;
 	private static int count;
@@ -24,8 +24,10 @@ public class Process {
 
 	
 
-	public Process(int size) {
+	public Process(int size, int timeToExecute, int Priority) {
 		count++;
+		this.timeToExecute = timeToExecute;
+		this.Priority = Priority;
 		this.processId = "P" + count;
 		this.size = size;
 		this.subProcesses = getSubProcesses();
@@ -67,7 +69,7 @@ public class Process {
 		if(this.subProcesses == null || this.subProcesses.isEmpty()) {
 		List<String> process = new LinkedList<>();
 			for(int i = 0; i < this.getSize(); i++) {
-				process.add((this.getProcessId()));
+				process.add((this.getProcessId() + " " + i));
 			}
 			this.subProcesses = process;
 		}
@@ -91,6 +93,20 @@ public class Process {
 	public void setTimeToExecute(int timeToExecute) {
 		this.timeToExecute = timeToExecute;
 	}
+
+
+
+	public int getPriority() {
+		return Priority;
+	}
+
+
+
+	public void setPriority(int priority) {
+		Priority = priority;
+	}
+	
+	
 	
 	
 

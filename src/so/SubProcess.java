@@ -13,7 +13,7 @@ public class SubProcess {
 	
 	private int timeToExecute;
 	
-	private static int COUNT_GENERATE_ID = 0;
+	public static int COUNT_GENERATE_ID = 0;
 	
 	private int instructions;
 	

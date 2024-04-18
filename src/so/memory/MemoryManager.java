@@ -13,7 +13,7 @@ public class MemoryManager {
 	private Hashtable<String, FrameMemory> logicalMemory;
 	private int pageSize;
 	private SubProcess[][] physicalMemory;
-	private static int NUMBER_OF_INTRUCTIONS_OF_A_PROCESS = 3;
+	private static int NUMBER_OF_INTRUCTIONS_OF_A_PROCESS = 7;
 
 	
 	public MemoryManager(int pageSize, int physicalMemorySize) {
@@ -37,13 +37,13 @@ public class MemoryManager {
 	    if (spaces <= frames.size()) {
 	        int subProcessIndex = 0;
 	        for(int i = 0; i < spaces; i++) {
-	        	FrameMemory  frameMemory = frames.get(i); 
+	        	FrameMemory frameMemory = frames.get(i);
 	            for(int j = 0; j < this.pageSize; j++) {
 	                if(subProcessIndex < process.getSubProcesses().size()) {
-	                    SubProcess subProcess = new SubProcess(subProcessesIds.get(subProcessIndex), NUMBER_OF_INTRUCTIONS_OF_A_PROCESS);
+	                    SubProcess subProcess = new SubProcess(process.getProcessId(), NUMBER_OF_INTRUCTIONS_OF_A_PROCESS);
 	                    this.physicalMemory[frames.get(i).getPageNumber()][j] = subProcess;
 	                    frameMemory.setDisplacement(j);
-	                    this.logicalMemory.put(subProcess.getSubProcessId(), frameMemory);
+	                    this.logicalMemory.put(subProcess.getSubProcessId(), new FrameMemory(frameMemory.getPageNumber(), j));
 	                    subProcessIndex++;
 	                
 	                } else {
@@ -52,6 +52,8 @@ public class MemoryManager {
 	            }
 	        }
 	    }
+	    SubProcess.COUNT_GENERATE_ID = 0;
+	    System.out.println("");
 
 	}
 
@@ -99,8 +101,7 @@ public class MemoryManager {
 	    List<String> subProcessIds = process.getSubProcesses();
 	    List<SubProcess> subProcesses = new LinkedList<>();
 	    for (int i = 0; i < subProcessIds.size(); i++) {
-	        String subProcessId = subProcessIds.get(i) + " " + i;
-	        FrameMemory physicalMemoryAddress = this.logicalMemory.get(subProcessId);
+	        FrameMemory physicalMemoryAddress = this.logicalMemory.get(subProcessIds.get(i));
 	        if (physicalMemoryAddress != null) { 
 	            int pageNumber = physicalMemoryAddress.getPageNumber();
 	            int displacement = physicalMemoryAddress.getDisplacement();

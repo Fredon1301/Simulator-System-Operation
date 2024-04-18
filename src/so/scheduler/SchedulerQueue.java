@@ -8,11 +8,9 @@ import java.util.PriorityQueue;
 import so.SubProcess;
 import so.SystemCallType;
 import so.SystemOperation;
-import so.cpu.Core;
-import so.cpu.CpuManager;
 import so.process.Process;
 
-public class SchedulerQueue extends Scheduler implements ProcessListener {
+public class SchedulerQueue extends Scheduler {
 
 	
 	protected PriorityQueue<Process> queue;
@@ -20,9 +18,9 @@ public class SchedulerQueue extends Scheduler implements ProcessListener {
 	
 	
 	public SchedulerQueue(Comparator<Process> comparator) {
+		super();
 		this.queue = new PriorityQueue<>(comparator);
 		this.subProcesses = new Hashtable<String, List<SubProcess>>();
-		this.cpuManager = new CpuManager(this);
 	}
 	
 
@@ -31,7 +29,6 @@ public class SchedulerQueue extends Scheduler implements ProcessListener {
 		List<SubProcess> subProcess = SystemOperation.systemCall(SystemCallType.READ_PROCESS, process);
 		this.queue.add(process);
 		this.subProcesses.put(process.getProcessId(), subProcess);
-		registerInProcessor(process.getProcessId());
 		
 	}
 
@@ -45,36 +42,36 @@ public class SchedulerQueue extends Scheduler implements ProcessListener {
 	public boolean isFinished() {
 		return this.queue.isEmpty();
 	}
-	
-	private void registerInProcessor(String processId) {
-		for(Core core : this.getCpuManager().getCores()) {
-			if(core.getActuallySubProcess() == null) {
-				this.coreExecuted(core.getCoreId(), processId);
-			}
-		}
-	}
 
 	
 	@Override
-	public void coreExecuted(int coreId, String processId) {
-		try {
+	public void coresExecuted(int coreId) {
+		//try {
 			System.out.println("Core executed");
-			if(this.subProcesses.get(processId) != null ) {
-				Process actuallyProcess = this.queue.peek();
-				List<SubProcess> subProcess = this.subProcesses.get(actuallyProcess.getProcessId());
-				if(subProcess.isEmpty()) {
-					this.queue.poll();
-					this.subProcesses.remove(processId);
-					actuallyProcess = this.queue.peek();
+			Process process = this.queue.peek();
+			if(process != null) {
+				List<SubProcess> subProcesses = this.subProcesses.get(process.getProcessId());
+				if (this.subProcesses.get(process.getProcessId()) == null || this.subProcesses.get(process.getProcessId()).isEmpty()) {
+					this.queue.poll(); //Remove o primeiro elemento
+					this.subProcesses.remove(process.getProcessId());
+					process = this.queue.peek();
+					if(process == null) {
+						return;
+					}
+					subProcesses = this.subProcesses.get(process.getProcessId());
+					
+					if(subProcesses.isEmpty()) {
+						return;
+					}
 					
 				}
-				SubProcess actuallySubProcess = subProcess.remove(subProcess.size() - 1);
-				this.cpuManager.registerProcess(coreId, actuallySubProcess);
+				SubProcess actuallySubprocess = subProcesses.remove(0);
+				cpuManager.registerProcess(coreId, actuallySubprocess);				
 			}
-		} catch (Exception e) {
-			System.out.println("Processo interrompido: ERROR");
-		}
-		
+	
+		/*} catch (Exception e) {
+			System.out.println("Processo interrompido: ERRO!");
+		}*/
 	}
 	
 	@Override

@@ -40,7 +40,7 @@ public class CpuManager {
 			
 			@Override
 			public void run () {
-				System.out.println("******************** Iniciando a execução ****************");
+				System.out.println("******************** Iniciando a execução  ");
 				executeProcesses();
 			}
 		},0, CLOCK);
@@ -49,19 +49,14 @@ public class CpuManager {
 	public void executeProcesses() {
 		printProcessor();
 		for(int i = 0; i < cores.length; i++) {
-			if(!this.cores[i].isEmpty()) {
-				System.out.println("Executing Core...");
-				this.cores[i].run();
-			} else {
-				System.out.println("Core is empty");
-			}
+			cores[i].run();
 		}
-		this.processListener.clockExecuted(CLOCK);
+		//this.processListener.clockExecuted(CLOCK);
 	
 	}
 	
 	private void printProcessor() {
-		System.out.println(">>>>>>>> Imprimindo o status do processador");
+		System.out.println(">>>>>>>> Imprimindo o status do processador <<<<<<<<");
 		for(int i = 0; i < this.cores.length; i++) {
 			if(this.cores[i].getActuallySubProcess() != null) {
 				if( i == (this.cores.length - 1)) {
@@ -74,11 +69,11 @@ public class CpuManager {
 		}
 	}
 	
-	public void registerProcess(Integer coreIndex, SubProcess subProcess) throws Exception {
+	public void registerProcess(Integer coreIndex, SubProcess subProcess) {
 		if(coreIndex != null) {
-			this.cores[coreIndex].setActuallySubProcess(subProcess);
+			cores[coreIndex].setActuallySubProcess(subProcess);
 		} else {
-			throw new Exception("No available cores");
+			System.out.println("No available cores");
 		}
 	}
 	
@@ -88,13 +83,13 @@ public class CpuManager {
 	
 	public void finishExecution(Process process) {
 		for (Core core : this.cores) {
-			if (process.getProcessId().equals(core.getActuallySubProcess().getSubProcessId())) {
+			if (process.getProcessId().equals(core.getActuallySubProcess().getProcessId())) {
 				core.finishExecution();
 			}
 		}
 	}
 	
-	public List<SubProcess> interrupt(Process process) {
+	/*public List<SubProcess> interrupt(Process process) {
 		timer.cancel();
 		List<SubProcess> subProcesses = new LinkedList<>();
 		for (Core core : this.getCores()) {
@@ -106,7 +101,7 @@ public class CpuManager {
 		}
 		clock();
 		return subProcesses;
-	}
+	}*/
 		
 	
 	}

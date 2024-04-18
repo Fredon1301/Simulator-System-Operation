@@ -8,7 +8,9 @@ import so.memory.Strategy;
 import so.process.Process;
 import so.scheduler.Scheduler;
 import so.scheduler.strategy.FCFS;
-import so.scheduler.strategy.RoundRobin;
+import so.scheduler.strategy.Lotering;
+import so.scheduler.strategy.Priority;
+import so.scheduler.strategy.SJF;
 
 public class SystemOperation {
 	
@@ -17,7 +19,7 @@ public class SystemOperation {
 	private	static Scheduler scheduler;
 
 	
-	public static Process systemCall(SystemCallType type, int processSize) {
+	public static Process systemCall(SystemCallType type, int processSize, int timeToExecute, int Priority) {
 		if (type.equals(SystemCallType.CREATE_PROCESS)) {
 			if (memory == null) {
 				memory = new MemoryManager();
@@ -26,13 +28,12 @@ public class SystemOperation {
 				scheduler = new FCFS();
 			 }
 		}
-		return new Process(processSize);
+		return new Process(processSize, timeToExecute, Priority);
 		}
 		
 	public static List<SubProcess> systemCall(SystemCallType type, Process process) {
 		 if (type.equals(SystemCallType.CLOSE_PROCESS)) {
 			memory.deallocate(process);
-			scheduler.closeProcess(process);
 			memory.printMemoryStatus();
 		}
 		 if (type.equals(SystemCallType.WRITE_PROCESS)) {
@@ -52,20 +53,19 @@ public class SystemOperation {
 
 		SystemOperation.memory = new MemoryManager();
 		
-		Process process1 = systemCall(SystemCallType.CREATE_PROCESS, 81);
-		Process process2 = systemCall(SystemCallType.CREATE_PROCESS, 13);
-		Process process3 = systemCall(SystemCallType.CREATE_PROCESS, 34);
-		
-		
+		Process process1 = systemCall(SystemCallType.CREATE_PROCESS, 40, 10, 10 );
 		systemCall(SystemCallType.WRITE_PROCESS, process1);
+		Process process2 = systemCall(SystemCallType.CREATE_PROCESS, 20,5, 11);
 		systemCall(SystemCallType.WRITE_PROCESS, process2);
+		Process process3 = systemCall(SystemCallType.CREATE_PROCESS, 60,15, 5);
 		systemCall(SystemCallType.WRITE_PROCESS, process3);
-		systemCall(SystemCallType.CLOSE_PROCESS, process1);
 		systemCall(SystemCallType.CLOSE_PROCESS, process3);
 		
 		
-		while(!SystemOperation.scheduler.isFinished());
+
 		
+		
+	
 
 
 
