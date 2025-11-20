@@ -65,21 +65,3 @@ Como o projeto não utiliza gerenciadores de dependência (como Maven ou Gradle)
     ```bash
     java -cp ../binMain application.Program
     ```
-
-## 📊 Exemplo de Uso
-
-Ao iniciar, o programa pode solicitar a entrada de dados manual ou carregar um arquivo de processos. Exemplo de fluxo no terminal:
-
-```text
-> Iniciando Simulador de SO...
-> Escolha o algoritmo de escalonamento:
-  [1] FIFO
-  [2] Round Robin (Quantum = 2)
-> Digite a opção: 2
-> Adicionando Processo A (Tempo: 5, Prioridade: 1)
-> Adicionando Processo B (Tempo: 3, Prioridade: 2)
-...
-[TIME 0] Processo A executando...
-[TIME 2] Context Switch -> Processo B
-...
-> Simulação finalizada.
